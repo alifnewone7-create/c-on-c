@@ -87,6 +87,14 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} ${schibsted.variable} ${schibstedBody.variable} ${techMono.variable}`}
     >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "try{if(localStorage.getItem('coco_sidebar_collapsed')==='1'){document.documentElement.setAttribute('data-sidebar','collapsed')}}catch(e){}",
+          }}
+        />
+      </head>
       <body className="bg-background font-sans antialiased">
         <AssetCacheProvider>
           <AuthProvider>

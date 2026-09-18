@@ -22,10 +22,13 @@ export function useSidebarCollapsed() {
   }, [])
   const toggle = () =>
     setCollapsed((v) => {
+      const next = !v
       try {
-        window.localStorage.setItem(STORAGE_KEY, v ? '0' : '1')
+        window.localStorage.setItem(STORAGE_KEY, next ? '1' : '0')
       } catch {}
-      return !v
+      if (next) document.documentElement.setAttribute('data-sidebar', 'collapsed')
+      else document.documentElement.removeAttribute('data-sidebar')
+      return next
     })
   return { collapsed, toggle }
 }
