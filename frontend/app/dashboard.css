@@ -462,7 +462,7 @@ html[data-sidebar='collapsed'] .dsh-sidebar .dsh-side-link.is-active::before {
     transform: translate3d(0, 0, 0);
   }
   50% {
-    transform: translate3d(0, -7px, 0);
+    transform: translate3d(0, -9px, 0);
   }
 }
 .dsh-mascot-halo {
@@ -1246,7 +1246,7 @@ html[data-sidebar='collapsed'] .dsh-sidebar .dsh-side-link.is-active::before {
   .dsh-mascot-img {
     filter: none;
     /* transform-only float: GPU composited, no paint per frame */
-    animation: dsh-float-soft 6s ease-in-out infinite;
+    animation: dsh-float-soft 3.4s ease-in-out infinite;
     will-change: transform;
     backface-visibility: hidden;
     transform: translate3d(0, 0, 0);
