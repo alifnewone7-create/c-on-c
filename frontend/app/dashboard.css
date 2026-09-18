@@ -456,6 +456,15 @@ html[data-sidebar='collapsed'] .dsh-sidebar .dsh-side-link.is-active::before {
     transform: translate3d(0, -10px, 0);
   }
 }
+@keyframes dsh-float-soft {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -7px, 0);
+  }
+}
 .dsh-mascot-halo {
   position: absolute;
   top: 50%;
@@ -1229,7 +1238,6 @@ html[data-sidebar='collapsed'] .dsh-sidebar .dsh-side-link.is-active::before {
     animation: none !important;
   }
 }
-
 /* ── Mobile performance: drop expensive filters / blurs / noise below md ── */
 @media (max-width: 767px) {
   .dsh-root::after {
@@ -1237,8 +1245,11 @@ html[data-sidebar='collapsed'] .dsh-sidebar .dsh-side-link.is-active::before {
   }
   .dsh-mascot-img {
     filter: none;
-    animation: none;
-    will-change: auto;
+    /* transform-only float: GPU composited, no paint per frame */
+    animation: dsh-float-soft 6s ease-in-out infinite;
+    will-change: transform;
+    backface-visibility: hidden;
+    transform: translate3d(0, 0, 0);
   }
   .dsh-mascot-halo {
     display: none;
