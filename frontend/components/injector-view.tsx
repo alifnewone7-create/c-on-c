@@ -21,6 +21,8 @@ import {
   type Direction,
 } from '@/components/signal-kit'
 import { otcMarkets, realMarkets, type Market, type MarketType } from '@/lib/markets'
+import { StrategySelect } from '@/components/strategy-select'
+import { DEFAULT_STRATEGY, getStrategy, type StrategyId } from '@/lib/strategies'
 import { useGatedAction } from '@/hooks/use-gated-action'
 
 type Step = 'market' | 'duration' | 'analyzing' | 'result'
@@ -32,6 +34,7 @@ type Injection = {
   direction: Direction
   entry: Date
   seed: number
+  strategy: StrategyId
 }
 
 const DURATIONS: { value: Duration; tag: string; note: string }[] = [
@@ -71,6 +74,7 @@ function InjectorStudio() {
   const [query, setQuery] = useState('')
   const [market, setMarket] = useState<Market | null>(null)
   const [duration, setDuration] = useState<Duration | null>(null)
+  const [strategy, setStrategy] = useState<StrategyId>(DEFAULT_STRATEGY)
   const [result, setResult] = useState<Injection | null>(null)
   const [busy, setBusy] = useState(false)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -133,6 +137,7 @@ function InjectorStudio() {
           direction: data.direction,
           entry,
           seed: (entry.getTime() / 60000) ^ (market.id.length * 7919) ^ (duration * 104729),
+          strategy,
         })
         setStep('result')
       }, ANALYZING_MS)
@@ -192,6 +197,8 @@ function InjectorStudio() {
               )
             })}
           </div>
+          <div className="inj-divider" />
+          <StrategySelect value={strategy} onChange={setStrategy} testidPrefix="injector" />
           <PrimaryButton onClick={inject} disabled={!duration || busy} icon={Syringe} testid="injector-inject-button">
             {busy ? 'Preparing…' : duration ? `Inject ${duration}-minute signal` : 'Select a duration to inject'}
           </PrimaryButton>
@@ -214,6 +221,7 @@ function InjectorStudio() {
 function ResultCard({ result, onReset }: { result: Injection; onReset: () => void }) {
   const { market, duration, direction, entry, seed } = result
   const expiry = new Date(entry.getTime() + duration * 60_000)
+  const strat = getStrategy(result.strategy)
 
   return (
     <div className="flex flex-col gap-4" data-testid="injector-result">
@@ -222,6 +230,11 @@ function ResultCard({ result, onReset }: { result: Injection; onReset: () => voi
           <MarketHeader market={market} suffix="Injector" nameTestid="injector-selected-market" />
           <DirTag direction={direction} testid="injector-direction-pill" />
         </div>
+
+        <span className="inj-chip self-start" data-testid="injector-strategy-used">
+          <Syringe className="h-3 w-3" />
+          {strat.name}
+        </span>
 
         <div className="inj-chart">
           <div className="inj-chart-head">

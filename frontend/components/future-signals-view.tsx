@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Clock, Timer, X, Minus, Plus, Hash, Radar, RefreshCw, Layers, ArrowUp, ArrowDown, Scale } from 'lucide-react'
+import { Clock, Timer, X, Minus, Plus, Hash, Radar, RefreshCw, Layers, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, Scale } from 'lucide-react'
 import { CocoPageShell } from '@/components/coco/coco-page-shell'
 import { AuthGuard } from '@/components/auth-guard'
 import { PairFlags } from '@/components/pair-flags'
@@ -20,9 +20,11 @@ import {
 } from '@/components/signal-kit'
 import { otcMarkets, realMarkets, marketLabel, type Market, type MarketType } from '@/lib/markets'
 import type { Broker } from '@/lib/brokers'
+import { StrategySelect } from '@/components/strategy-select'
+import { DEFAULT_STRATEGY, getStrategy, type StrategyId } from '@/lib/strategies'
 import { useGatedAction } from '@/hooks/use-gated-action'
 
-type Phase = 'build' | 'analyzing' | 'result'
+type Phase = 'market' | 'setup' | 'analyzing' | 'result'
 
 type Signal = {
   market: Market
@@ -57,11 +59,12 @@ export function FutureSignalsView() {
 function FutureStudio() {
   const { preflight, handleServerGate } = useGatedAction('future-signals')
   const [broker, setBroker] = useBroker()
-  const [phase, setPhase] = useState<Phase>('build')
+  const [phase, setPhase] = useState<Phase>('market')
   const [tab, setTab] = useState<MarketType>('otc')
   const [query, setQuery] = useState('')
   const [selected, setSelected] = useState<Record<string, Market>>({})
   const [count, setCount] = useState(5)
+  const [strategy, setStrategy] = useState<StrategyId>(DEFAULT_STRATEGY)
   const [signals, setSignals] = useState<Signal[]>([])
   const [busy, setBusy] = useState(false)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -95,7 +98,7 @@ function FutureStudio() {
 
   function reset() {
     setSignals([])
-    setPhase('build')
+    setPhase('market')
     scrollTop()
   }
 
@@ -149,7 +152,7 @@ function FutureStudio() {
     <div ref={topRef} className="inj flex flex-1 scroll-mt-24 flex-col gap-4 sm:gap-5" data-testid="future-studio">
       <BrokerBar broker={broker} onChange={setBroker} />
 
-      {phase === 'build' && (
+      {phase === 'market' && (
         <>
           <section className="inj-panel coco-rise" style={{ '--d': '80ms' } as React.CSSProperties} data-testid="future-build-step">
             <SegTabs tab={tab} onTab={setTab} lockedTo={lockedType} testidPrefix="future" />
@@ -172,8 +175,71 @@ function FutureStudio() {
             />
           </section>
 
-          {selectedList.length > 0 && (
-          <section className="inj-panel fs-setup coco-rise" style={{ '--d': '140ms' } as React.CSSProperties} data-testid="future-setup">
+          <div className="fs-dock" data-testid="future-dock">
+            <div className="fs-dock-sum">
+              {selectedList.length > 0 ? (
+                <>
+                  <span className="fs-flag-stack" aria-hidden="true">
+                    {selectedList.slice(0, 3).map((m) => (
+                      <PairFlags key={m.id} base={m.base} quote={m.quote} size={18} />
+                    ))}
+                    {selectedList.length > 3 && <span className="fs-flag-more">+{selectedList.length - 3}</span>}
+                  </span>
+                  <span className="min-w-0">
+                    <span className="fs-dock-title" data-testid="future-dock-summary">
+                      {selectedList.length} pair{selectedList.length > 1 ? 's' : ''} selected
+                    </span>
+                    <span className="fs-dock-sub">Step 1 of 2 · {lockedType === 'otc' ? 'OTC Market' : 'Real Market'}</span>
+                  </span>
+                </>
+              ) : (
+                <span className="min-w-0">
+                  <span className="fs-dock-title" data-testid="future-dock-summary">
+                    No markets yet
+                  </span>
+                  <span className="fs-dock-sub">Step 1 of 2 · pick at least one pair</span>
+                </span>
+              )}
+            </div>
+            <PrimaryButton
+              onClick={() => {
+                setPhase('setup')
+                scrollTop()
+              }}
+              disabled={selectedList.length === 0}
+              icon={ArrowRight}
+              testid="future-next-button"
+            >
+              Next Step
+            </PrimaryButton>
+          </div>
+          <div className="h-16 md:hidden" aria-hidden="true" />
+        </>
+      )}
+
+      {phase === 'setup' && (
+        <>
+          <section className="inj-panel fs-setup coco-rise" style={{ '--d': '80ms' } as React.CSSProperties} data-testid="future-setup">
+            <header className="flex items-center gap-3">
+              <div className="min-w-0 flex-1">
+                <p className="coco-sub text-[17px] leading-tight text-white">Queue setup</p>
+                <p className="inj-kicker">Step 2 of 2 · review and generate</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setPhase('market')
+                  scrollTop()
+                }}
+                className="inj-btn-ghost"
+                data-testid="future-back-button"
+              >
+                <ArrowLeft className="h-3.5 w-3.5" />
+                Markets
+              </button>
+            </header>
+            <div className="inj-divider" />
+
             <div className="fs-setup-grid">
               <div className="fs-setup-col">
                 <header className="fs-setup-head">
@@ -182,7 +248,7 @@ function FutureStudio() {
                   </span>
                   <div className="min-w-0 flex-1">
                     <p className="fs-setup-title">Selected markets</p>
-                    <p className="fs-count-sub">Tap a pair above to add or remove it</p>
+                    <p className="fs-count-sub">Go back to add or remove a pair</p>
                   </div>
                   <span className="fs-setup-badge coco-mono" data-testid="future-selected-count">
                     {selectedList.length}
@@ -221,34 +287,25 @@ function FutureStudio() {
                 </div>
               </div>
             </div>
+
+            <div className="inj-divider" />
+            <StrategySelect value={strategy} onChange={setStrategy} testidPrefix="future" />
           </section>
-          )}
 
           <div className="fs-dock" data-testid="future-dock">
             <div className="fs-dock-sum">
-              {selectedList.length > 0 ? (
-                <>
-                  <span className="fs-flag-stack" aria-hidden="true">
-                    {selectedList.slice(0, 3).map((m) => (
-                      <PairFlags key={m.id} base={m.base} quote={m.quote} size={18} />
-                    ))}
-                    {selectedList.length > 3 && <span className="fs-flag-more">+{selectedList.length - 3}</span>}
-                  </span>
-                  <span className="min-w-0">
-                    <span className="fs-dock-title" data-testid="future-dock-summary">
-                      {selectedList.length} pair{selectedList.length > 1 ? 's' : ''} · {count} signal{count > 1 ? 's' : ''}
-                    </span>
-                    <span className="fs-dock-sub">{lockedType === 'otc' ? 'OTC Market' : 'Real Market'} · {broker.name}</span>
-                  </span>
-                </>
-              ) : (
-                <span className="min-w-0">
-                  <span className="fs-dock-title" data-testid="future-dock-summary">
-                    No markets yet
-                  </span>
-                  <span className="fs-dock-sub">Pick at least one pair to build a queue</span>
+              <span className="fs-flag-stack" aria-hidden="true">
+                {selectedList.slice(0, 3).map((m) => (
+                  <PairFlags key={m.id} base={m.base} quote={m.quote} size={18} />
+                ))}
+                {selectedList.length > 3 && <span className="fs-flag-more">+{selectedList.length - 3}</span>}
+              </span>
+              <span className="min-w-0">
+                <span className="fs-dock-title" data-testid="future-dock-summary">
+                  {selectedList.length} pair{selectedList.length > 1 ? 's' : ''} · {count} signal{count > 1 ? 's' : ''}
                 </span>
-              )}
+                <span className="fs-dock-sub">{getStrategy(strategy).name} · {broker.name}</span>
+              </span>
             </div>
             <PrimaryButton onClick={generate} disabled={selectedList.length === 0 || busy} icon={Radar} testid="future-generate-button">
               {busy ? 'Preparing…' : `Generate ${count} Signal${count > 1 ? 's' : ''}`}
@@ -266,7 +323,7 @@ function FutureStudio() {
         </section>
       )}
 
-      {phase === 'result' && <FutureResults signals={signals} broker={broker} markets={selectedList} onReset={reset} />}
+      {phase === 'result' && <FutureResults signals={signals} broker={broker} markets={selectedList} onReset={reset} strategy={strategy} />}
     </div>
   )
 }
@@ -352,13 +409,17 @@ function SelectedRow({ list, onRemove, onClear }: { list: Market[]; onRemove: (m
   )
 }
 
-function FutureResults({ signals, broker, markets, onReset }: { signals: Signal[]; broker: Broker; markets: Market[]; onReset: () => void }) {
+function FutureResults({ signals, broker, markets, onReset, strategy }: { signals: Signal[]; broker: Broker; markets: Market[]; onReset: () => void; strategy: StrategyId }) {
   const ups = signals.filter((s) => s.direction === 'UP').length
   return (
     <div className="flex flex-col gap-4" data-testid="future-result">
       <section className="inj-panel coco-rise" style={{ '--d': '40ms' } as React.CSSProperties}>
         <QueueHeader list={markets} count={signals.length} />
         <div className="fsx-brokerrow">
+          <span className="inj-chip" data-testid="future-strategy-used">
+            <Radar className="h-3 w-3" />
+            {getStrategy(strategy).name}
+          </span>
           <span className="fs-mix" data-testid="future-mix">
             <i data-tone="up">
               <ArrowUp className="h-3 w-3" strokeWidth={3} />

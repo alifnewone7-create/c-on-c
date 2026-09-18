@@ -23,6 +23,8 @@ import {
 } from '@/components/signal-kit'
 import { otcMarkets, realMarkets, type Market, type MarketType } from '@/lib/markets'
 import type { Broker } from '@/lib/brokers'
+import { StrategySelect } from '@/components/strategy-select'
+import { DEFAULT_STRATEGY, getStrategy, type StrategyId } from '@/lib/strategies'
 import { useGatedAction } from '@/hooks/use-gated-action'
 
 type Step = 'market' | 'confirm' | 'analyzing' | 'result'
@@ -33,6 +35,7 @@ type LiveSignal = {
   entry: Date
   direction: Direction
   seed: number
+  strategy: StrategyId
 }
 
 const ANALYZING_MS = 10_000
@@ -63,6 +66,7 @@ function LiveStudio() {
   const [tab, setTab] = useState<MarketType>('otc')
   const [query, setQuery] = useState('')
   const [market, setMarket] = useState<Market | null>(null)
+  const [strategy, setStrategy] = useState<StrategyId>(DEFAULT_STRATEGY)
   const [signal, setSignal] = useState<LiveSignal | null>(null)
   const [busy, setBusy] = useState(false)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -121,6 +125,7 @@ function LiveStudio() {
           entry,
           direction: data.direction,
           seed: (entry.getTime() / 60000) ^ (market.id.length * 7919),
+          strategy,
         })
         setStep('result')
       }, ANALYZING_MS)
@@ -147,6 +152,8 @@ function LiveStudio() {
         <section className="inj-panel coco-rise" style={{ '--d': '80ms' } as React.CSSProperties} data-testid="live-confirm-step">
           <MarketHeader market={market} onBack={reset} backTestid="live-change-market" nameTestid="live-selected-market" />
           <div className="inj-divider" />
+          <StrategySelect value={strategy} onChange={setStrategy} testidPrefix="live" />
+          <div className="inj-divider" />
           <div className="inj-stats">
             <StatTile icon={Timer} label="Duration" value="1 Minute" testid="live-rule-duration" />
             <StatTile icon={Scale} label="Money management" value="1 Step MTG" testid="live-rule-mtg" />
@@ -172,6 +179,7 @@ function LiveStudio() {
 
 function LiveResult({ signal, onReset }: { signal: LiveSignal; onReset: () => void }) {
   const { market, entry, direction } = signal
+  const strat = getStrategy(signal.strategy)
 
   return (
     <div className="flex flex-col gap-4" data-testid="live-result">
@@ -180,6 +188,11 @@ function LiveResult({ signal, onReset }: { signal: LiveSignal; onReset: () => vo
           <MarketHeader market={market} suffix="Live" nameTestid="live-selected-market" />
           <DirTag direction={direction} testid="live-direction-pill" />
         </div>
+
+        <span className="inj-chip self-start" data-testid="live-strategy-used">
+          <RadioTower className="h-3 w-3" />
+          {strat.name}
+        </span>
 
         <VerdictPlate direction={direction} testid="live-verdict" kicker="Live verdict" />
 
