@@ -4,9 +4,10 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { LogOut, PanelLeftClose, PanelLeftOpen, BadgeCheck } from 'lucide-react'
+import { LogOut, PanelLeftClose, PanelLeftOpen, BadgeCheck, ScanEye } from 'lucide-react'
 import { useAuth } from '@/components/auth-provider'
 import { SIDEBAR_SECTIONS } from '@/components/dashboard/dash-data'
+import { DashBrokerModal } from '@/components/dashboard/dash-broker-modal'
 import { TIER_LABEL } from '@/lib/tiers'
 import { cn } from '@/lib/utils'
 
@@ -41,6 +42,8 @@ export function DashSidebar({
   const pathname = usePathname()
   const router = useRouter()
   const { profile, logout, tier } = useAuth()
+  const [brokerOpen, setBrokerOpen] = useState(false)
+  const analyzerActive = pathname === '/otc-chart-analyzer' || pathname === '/real-chart-analyzer'
 
   async function handleLogout() {
     await logout()
@@ -69,6 +72,22 @@ export function DashSidebar({
                 <span className="dsh-side-heading-rule" aria-hidden="true" />
               </p>
             ) : null}
+            {i === 0 && (
+              <button
+                type="button"
+                onClick={() => setBrokerOpen(true)}
+                title={collapsed ? 'Analyzer' : undefined}
+                aria-haspopup="dialog"
+                aria-current={analyzerActive ? 'page' : undefined}
+                className={cn('dsh-side-link', analyzerActive && 'is-active')}
+                data-testid="sidebar-analyzer-btn"
+              >
+                <span className="dsh-side-link-icon">
+                  <ScanEye className="h-[18px] w-[18px]" />
+                </span>
+                <span className="dsh-side-label">Analyzer</span>
+              </button>
+            )}
             {section.links.map((link) => {
               const active = pathname === link.href
               return (
@@ -139,6 +158,15 @@ export function DashSidebar({
           <span className="dsh-side-label">Log out</span>
         </button>
       </div>
+
+      <DashBrokerModal
+        open={brokerOpen}
+        onClose={() => setBrokerOpen(false)}
+        onPick={() => {
+          setBrokerOpen(false)
+          router.push('/otc-chart-analyzer')
+        }}
+      />
     </aside>
   )
 }

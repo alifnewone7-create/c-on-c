@@ -1,7 +1,5 @@
 import {
   LayoutDashboard,
-  ScanLine,
-  ScanSearch,
   SatelliteDish,
   Syringe,
   Orbit,
@@ -26,13 +24,6 @@ export type NavSection = { heading: string | null; links: NavLink[] }
 
 export const SIDEBAR_SECTIONS: NavSection[] = [
   { heading: null, links: [{ label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard }] },
-  {
-    heading: 'Chart Analyzers',
-    links: [
-      { label: 'OTC Chart Analyzer', href: '/otc-chart-analyzer', icon: ScanLine },
-      { label: 'Real Chart Analyzer', href: '/real-chart-analyzer', icon: ScanSearch },
-    ],
-  },
   {
     heading: 'Signal System',
     links: [

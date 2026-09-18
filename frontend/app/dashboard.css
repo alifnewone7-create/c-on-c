@@ -61,6 +61,33 @@
   }
 }
 
+/* ── Page frame: sidebar + content on desktop ────────────────────────── */
+.coco-frame {
+  position: relative;
+}
+.coco-frame-main {
+  position: relative;
+  z-index: 1;
+}
+@media (min-width: 768px) {
+  .coco-frame-main {
+    margin-left: 264px;
+    transition: margin-left 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .coco-frame.is-collapsed .coco-frame-main {
+    margin-left: 86px;
+  }
+}
+
+/* ── Desktop broker picker ───────────────────────────────────────────── */
+.dsh-broker-card {
+  border-radius: 26px;
+  padding: 20px 18px 16px;
+  border: 1px solid rgba(196, 166, 255, 0.16);
+  background: linear-gradient(180deg, rgba(34, 20, 80, 0.96) 0%, rgba(13, 7, 32, 0.98) 100%);
+  box-shadow: 0 40px 90px -40px rgba(5, 2, 18, 0.9);
+}
+
 /* ── Sidebar ─────────────────────────────────────────────────────────── */
 .dsh-sidebar {
   display: none;
