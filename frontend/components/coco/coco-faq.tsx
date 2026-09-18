@@ -4,7 +4,7 @@ import { GlyphTelegram } from '@/components/coco/coco-glyphs'
 const FAQS = [
   {
     q: 'What markets does Coco AI cover?',
-    a: 'Coco AI monitors 42 pairs across forex, metals, crypto and OTC instruments. OTC coverage runs through weekends when regular markets are closed.',
+    a: 'Coco AI monitors all markets - OTC, Real, Crypto and Commodities. OTC coverage keeps running through weekends when regular markets are closed.',
   },
   {
     q: 'How is the OTC Analyzer different from the Real Chart Analyzer?',
