@@ -192,6 +192,11 @@
   flex-direction: column;
   gap: 3px;
 }
+.dsh-side-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
 .dsh-side-heading {
   display: flex;
   align-items: center;

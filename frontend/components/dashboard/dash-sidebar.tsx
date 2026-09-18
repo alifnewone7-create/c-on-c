@@ -65,29 +65,14 @@ export function DashSidebar({
 
       <nav className="dsh-side-nav">
         {SIDEBAR_SECTIONS.map((section, i) => (
-          <div key={section.heading ?? i} className="dsh-side-group">
+          <div key={section.heading ?? i} className="dsh-side-stack">
+          <div className="dsh-side-group">
             {section.heading ? (
               <p className="dsh-side-heading coco-mono">
                 <span className="dsh-side-label">{section.heading}</span>
                 <span className="dsh-side-heading-rule" aria-hidden="true" />
               </p>
             ) : null}
-            {i === 0 && (
-              <button
-                type="button"
-                onClick={() => setBrokerOpen(true)}
-                title={collapsed ? 'Analyzer' : undefined}
-                aria-haspopup="dialog"
-                aria-current={analyzerActive ? 'page' : undefined}
-                className={cn('dsh-side-link', analyzerActive && 'is-active')}
-                data-testid="sidebar-analyzer-btn"
-              >
-                <span className="dsh-side-link-icon">
-                  <ScanEye className="h-[18px] w-[18px]" />
-                </span>
-                <span className="dsh-side-label">Analyzer</span>
-              </button>
-            )}
             {section.links.map((link) => {
               const active = pathname === link.href
               return (
@@ -106,6 +91,30 @@ export function DashSidebar({
                 </Link>
               )
             })}
+          </div>
+
+          {i === 0 && (
+            <div className="dsh-side-group">
+              <p className="dsh-side-heading coco-mono">
+                <span className="dsh-side-label">Analyze</span>
+                <span className="dsh-side-heading-rule" aria-hidden="true" />
+              </p>
+              <button
+                type="button"
+                onClick={() => setBrokerOpen(true)}
+                title={collapsed ? 'Analyzer' : undefined}
+                aria-haspopup="dialog"
+                aria-current={analyzerActive ? 'page' : undefined}
+                className={cn('dsh-side-link', analyzerActive && 'is-active')}
+                data-testid="sidebar-analyzer-btn"
+              >
+                <span className="dsh-side-link-icon">
+                  <ScanEye className="h-[18px] w-[18px]" />
+                </span>
+                <span className="dsh-side-label">Analyzer</span>
+              </button>
+            </div>
+          )}
           </div>
         ))}
       </nav>

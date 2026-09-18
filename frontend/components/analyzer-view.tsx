@@ -24,7 +24,7 @@ export function AnalyzerView({ mode }: { mode: Mode }) {
               <div className="relative overflow-hidden pt-0">
                 <CocoHeroBg candles={false} />
 
-                <div className="relative z-10 mx-auto flex max-w-[980px] flex-col gap-5 px-4 pb-32 pt-6 sm:px-6 sm:pt-8 md:max-w-none md:px-10 md:pb-20 md:pt-10">
+                <div className="relative z-10 mx-auto flex max-w-[980px] flex-col gap-5 px-4 pb-32 pt-6 sm:px-6 sm:pt-8 md:px-8 md:pb-20 md:pt-10">
                   <AnalyzerModeSwitch mode={mode} />
 
                   <ChartAnalyzer mode={mode} />

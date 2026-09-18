@@ -34,7 +34,7 @@ export function CocoPageShell({
             <CocoHeroBg candles={false} />
 
             <div
-              className={`relative z-10 mx-auto flex w-full ${width} flex-col gap-5 px-4 pb-32 pt-6 sm:gap-6 sm:px-6 sm:pt-9 md:max-w-none md:px-10 md:pb-20 md:pt-10`}
+              className={`relative z-10 mx-auto flex w-full ${width} flex-col gap-5 px-4 pb-32 pt-6 sm:gap-6 sm:px-6 sm:pt-9 md:px-8 md:pb-20 md:pt-10`}
             >
               {title && (
                 <header className="coco-rise" style={{ '--d': '60ms' } as React.CSSProperties}>
