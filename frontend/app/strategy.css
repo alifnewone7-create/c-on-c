@@ -85,36 +85,22 @@
   color: rgba(255, 255, 255, 0.5);
 }
 
-/* ring faces get an accent frame + name plate */
+/* ring faces: keep paint cheap — image + a static check badge only */
+.stg-ring .dsh-backdrop,
+.stg-ring .dsh-backdrop.is-ring {
+  /* no backdrop-filter: blurring the live page behind made the ring stutter */
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  background: #07041a;
+}
+.stg-ring .dsh-ring-face {
+  contain: paint;
+}
 .stg-face {
   border-color: rgba(196, 166, 255, 0.18);
 }
 .stg-face[data-on='true'] {
-  border-color: color-mix(in srgb, var(--accent) 65%, transparent);
-  box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent) inset,
-    0 26px 54px -26px color-mix(in srgb, var(--accent) 65%, transparent);
-}
-.stg-face-body {
-  position: absolute;
-  inset-inline: 0;
-  bottom: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 9px 10px 10px;
-  background: linear-gradient(180deg, rgba(8, 4, 20, 0) 0%, rgba(8, 4, 20, 0.9) 60%, rgba(8, 4, 20, 0.97) 100%);
-}
-.stg-face-name {
-  font-size: 12.5px;
-  line-height: 1.15;
-  color: #fff;
-}
-.stg-face-tag {
-  font-size: 7.5px;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  color: color-mix(in srgb, var(--accent) 80%, white);
+  border-color: var(--accent);
 }
 .stg-face-check {
   position: absolute;
@@ -128,10 +114,7 @@
   color: #0b0618;
   background: var(--accent);
   opacity: 0;
-  transform: scale(0.6);
-  transition: opacity 0.2s ease, transform 0.2s ease;
 }
 .stg-face[data-on='true'] .stg-face-check {
   opacity: 1;
-  transform: scale(1);
 }

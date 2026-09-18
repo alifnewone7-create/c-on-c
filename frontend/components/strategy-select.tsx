@@ -58,7 +58,7 @@ export function StrategySelect({
         data-testid={`${testidPrefix}-strategy-field`}
       >
         <span className="stg-field-thumb" aria-hidden="true">
-          <img src={active.img} alt="" width={420} height={560} decoding="async" />
+          <img src={active.img} alt="" width={480} height={720} decoding="async" />
         </span>
         <span className="stg-field-body">
           <span className="stg-field-name coco-sub" data-testid={`${testidPrefix}-strategy-value`}>
@@ -219,7 +219,7 @@ function StrategyRing({
 
   return createPortal(
     <div
-      className="coco dsh-ring-root"
+      className="coco dsh-ring-root stg-ring"
       role="dialog"
       aria-modal="true"
       aria-label="Select strategy"
@@ -275,11 +275,7 @@ function StrategyRing({
                     style={{ '--accent': s.accent } as React.CSSProperties}
                     data-testid={`${testidPrefix}-strategy-${s.id}`}
                   >
-                    <img src={s.img} alt={s.name} width={420} height={560} draggable={false} decoding="async" />
-                    <span className="stg-face-body">
-                      <span className="stg-face-name coco-sub">{s.name}</span>
-                      <span className="stg-face-tag coco-mono">{s.tagline}</span>
-                    </span>
+                    <img src={s.img} alt={s.name} width={480} height={720} draggable={false} decoding="async" />
                     <span className="stg-face-check" aria-hidden="true">
                       <Check className="h-3.5 w-3.5" strokeWidth={3} />
                     </span>
